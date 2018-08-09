@@ -64,7 +64,7 @@
   </StackLayout>
                 </TabViewItem.view>
             </TabViewItem>
-            <TabViewItem title="5-day Forecast">
+            <TabViewItem title="Forecast">
                 <TabViewItem.view>
                     <StackLayout>
     <ScrollView>

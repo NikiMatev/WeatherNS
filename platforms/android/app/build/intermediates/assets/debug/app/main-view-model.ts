@@ -19,6 +19,10 @@ export class HelloWorldModel extends Observable {
             geolocation.enableLocationRequest();
           }
 
+          var time_of_day = utilities.getTimeOfDay();
+          this.set('background_class', time_of_day);
+          this.setIcons();
+
           
 
           var location = geolocation.getCurrentLocation({timeout: 10000}).
@@ -35,14 +39,24 @@ export class HelloWorldModel extends Observable {
                 var weather = res.weather[0].main.toLowerCase();
                 var weather_description = res.weather[0].description;
                 var temperature = (res.main.temp) - 273.15;
-                console.log(weather);
-                console.log(weather_description);
-                console.log(temperature);  
+                var icon = constants.WEATHER_ICONS[time_of_day][weather];
       
                 var rain = '0';
                   if(res.rain){
                       rain = res.rain['3h'];
                   }
+
+            this.set('icon', String.fromCharCode(icon));
+            this.set('temperature', `${utilities.describeTemperature(Math.floor(temperature))} (${utilities.convertKelvinToCelsius(temperature).toFixed(2)} °C)`);
+            this.set('weather', weather_description);
+            this.set('place', `${res.name}, ${res.sys.country}`);
+            this.set('wind', `${utilities.describeWindSpeed(res.wind.speed)} ${res.wind.speed}m/s ${utilities.degreeToDirection(res.wind.deg)} (${res.wind.deg}°)`);
+            this.set('clouds', `${res.clouds.all}%`);
+            this.set('pressure', `${res.main.pressure} hpa`);
+            this.set('humidity', `${utilities.describeHumidity(res.main.humidity)} (${res.main.humidity}%)`);
+            this.set('rain', `${rain}%`);
+            this.set('sunrise', moment.unix(res.sys.sunrise).format('hh:mm a'));
+            this.set('sunset', moment.unix(res.sys.sunset).format('hh:mm a'));
                         
                 });
       
@@ -54,49 +68,18 @@ export class HelloWorldModel extends Observable {
 
             //Forecast request
 
-            var locationForecast = locationStore.getLocation();
-    var url = `${constants.WEATHER_URL}${constants.WEATHER_FORECAST_PATH}?cnt=6&lat=${locationForecast.latitude}&lon=${locationForecast.longitude}&apikey=${constants.WEATHER_APIKEY}`;
-
-    var time_of_day = utilities.getTimeOfDay();
-    this.set('is_loading', true);
-    this.set('background_class', time_of_day);
-    this.setIcons();
-
-    requestor.get(url).then((response) => {
-      this.set('is_loading', false);
-      var forecast = this.getForecast(response);
-      this.set('forecast', forecast);
-    });
-  }
-
-  private getForecast(response) {
-    var forecast = [];
-    var list = response.list.splice(1);
-    list.forEach((item) => {
-      forecast.push({
-        day: moment.unix(item.dt).format('MMM DD (ddd)'),
-        icon: String.fromCharCode(constants.WEATHER_ICONS['day'][item.weather[0].main.toLowerCase()]),
-        temperature: {
-          day: `${utilities.describeTemperature(item.temp.day)}`,
-          night: `${utilities.describeTemperature(item.temp.night)}`
-        },
-        wind: `${item.speed}m/s`,
-        clouds: `${item.clouds}%`,
-        pressure: `${item.pressure} hpa`,
-        description: item.weather[0].description
-      })
-    });
-
-    return forecast;
-  }
-
-  private setIcons() {
-    var icons = utilities.getIcons(['temperature', 'wind', 'cloud', 'pressure']);
-    icons.forEach((item) => {
-      this.set(`${item.name}_icon`, item.icon);
-    });
-  }
     }
 
-   
+    setIcons() {
+        var icons = utilities.getIcons([
+          'temperature', 'wind', 'cloud',
+          'pressure', 'humidity', 'rain',
+          'sunrise', 'sunset'
+        ]);
+        icons.forEach((item) => {
+          this.set(`${item.name}_icon`, item.icon);
+        });
+      }
 
+   
+}

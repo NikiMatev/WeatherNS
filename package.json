@@ -10,6 +10,7 @@
 		}
 	},
 	"dependencies": {
+		"font-awesome": "^4.7.0",
 		"moment": "^2.22.2",
 		"nativescript-geolocation": "^4.3.0",
 		"nativescript-theme-core": "~1.0.4",

@@ -1,4 +1,5 @@
 {
+    "font-awesome": true,
     "moment": true,
     "nativescript-geolocation": true,
     "nativescript-theme-core": true,
