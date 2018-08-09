@@ -1,0 +1,4 @@
+#Thu Aug 09 11:45:44 EEST 2018
+base.0=D\:\\NativeApps\\weatherNS\\platforms\\android\\app\\build\\intermediates\\transforms\\dexMerger\\debug\\0
+path.0=classes.dex
+renamed.0=classes.dex

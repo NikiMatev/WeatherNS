@@ -1,0 +1,11 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+function saveLocation(loc) {
+    exports.location = loc;
+}
+exports.saveLocation = saveLocation;
+function getLocation() {
+    return exports.location;
+}
+exports.getLocation = getLocation;
+//# sourceMappingURL=data:application/json;base64,eyJ2ZXJzaW9uIjozLCJmaWxlIjoibG9jYXRpb25TdG9yZS5qcyIsInNvdXJjZVJvb3QiOiIiLCJzb3VyY2VzIjpbImxvY2F0aW9uU3RvcmUudHMiXSwibmFtZXMiOltdLCJtYXBwaW5ncyI6Ijs7QUFFQSxzQkFBNkIsR0FBRztJQUM5QixnQkFBUSxHQUFHLEdBQUcsQ0FBQztBQUNqQixDQUFDO0FBRkQsb0NBRUM7QUFFRDtJQUNFLE1BQU0sQ0FBQyxnQkFBUSxDQUFDO0FBQ2xCLENBQUM7QUFGRCxrQ0FFQyIsInNvdXJjZXNDb250ZW50IjpbImV4cG9ydCB2YXIgbG9jYXRpb247XG5cbmV4cG9ydCBmdW5jdGlvbiBzYXZlTG9jYXRpb24obG9jKSB7XG4gIGxvY2F0aW9uID0gbG9jO1xufVxuXG5leHBvcnQgZnVuY3Rpb24gZ2V0TG9jYXRpb24oKSB7XG4gIHJldHVybiBsb2NhdGlvbjtcbn1cbiJdfQ==
