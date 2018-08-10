@@ -20,7 +20,7 @@ export class HelloWorldModel extends Observable {
           }
 
           var time_of_day = utilities.getTimeOfDay();
-          this.set('background_class', time_of_day);
+          this.set('background_class', time_of_day);          
           this.setIcons();
 
           
@@ -31,14 +31,14 @@ export class HelloWorldModel extends Observable {
               if (loc) {
                 locationStore.saveLocation(loc);
                 this.set('is_loading', true);
-      
+                                
                 var url = `${constants.WEATHER_URL}${constants.CURRENT_WEATHER_PATH}?lat=${loc.latitude}&lon=${loc.longitude}&apikey=${constants.WEATHER_APIKEY}`;
                 requestor.get(url).then((res) => {
                 this.set('is_loading', false);
                 
                 var weather = res.weather[0].main.toLowerCase();
                 var weather_description = res.weather[0].description;
-                var temperature = (res.main.temp) - 273.15;
+                var temperature = (res.main.temp);
                 var icon = constants.WEATHER_ICONS[time_of_day][weather];
       
                 var rain = '0';
@@ -59,7 +59,6 @@ export class HelloWorldModel extends Observable {
             this.set('sunset', moment.unix(res.sys.sunset).format('hh:mm a'));
                         
                 });
-      
               }
             },
             (e) => {
@@ -67,9 +66,45 @@ export class HelloWorldModel extends Observable {
             });
 
             //Forecast request
+            
 
+            // var forecast_location = locationStore.getLocation();
+            // var url_Forecast = `${constants.WEATHER_URL}${constants.WEATHER_FORECAST_PATH}?lat=${forecast_location.latitude}&lon=${forecast_location.longitude}&apikey=${constants.WEATHER_APIKEY}`;
+
+            
+            // // this.set('is_loading', true);
+            // // this.setIcons();
+
+            // requestor.get(url_Forecast).then((response) => {
+            // this.set('is_loading', false);
+            // var forecast = this.getForecast(response);
+            // this.set('forecast', forecast);
+            // });
+          
+    }
+    private getForecast(response) {
+      var forecast = [];
+      var list = response.list.splice(1);
+      list.forEach((item) => {
+        forecast.push({
+          day: moment.unix(item.dt).format('MMM DD (ddd)'),
+          icon: String.fromCharCode(constants.WEATHER_ICONS['day'][item.weather[0].main.toLowerCase()]),
+          temperature: {
+            day: `${utilities.describeTemperature(item.temp.day)}`,
+            night: `${utilities.describeTemperature(item.temp.night)}`
+          },
+          wind: `${item.speed}m/s`,
+          clouds: `${item.clouds}%`,
+          pressure: `${item.pressure} hpa`,
+          description: item.weather[0].description
+        })
+      });
+
+      return forecast;
     }
 
+
+    
     setIcons() {
         var icons = utilities.getIcons([
           'temperature', 'wind', 'cloud',
