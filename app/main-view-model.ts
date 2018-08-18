@@ -21,7 +21,7 @@ export class HelloWorldModel extends Observable {
 
           var time_of_day = utilities.getTimeOfDay();
           this.set('background_class', time_of_day);          
-          this.setIcons();
+          this.setIconsTab1();
 
           
 
@@ -29,7 +29,10 @@ export class HelloWorldModel extends Observable {
           then(
             (loc) => {
               if (loc) {
-                locationStore.saveLocation(loc);
+
+                locationStore.saveLatitude(loc.latitude);
+                locationStore.saveLongitude(loc.longitude);
+            
                 this.set('is_loading', true);
                                 
                 var url = `${constants.WEATHER_URL}${constants.CURRENT_WEATHER_PATH}?lat=${loc.latitude}&lon=${loc.longitude}&apikey=${constants.WEATHER_APIKEY}`;
@@ -68,21 +71,30 @@ export class HelloWorldModel extends Observable {
             //Forecast request
             
 
-            // var forecast_location = locationStore.getLocation();
-            // var url_Forecast = `${constants.WEATHER_URL}${constants.WEATHER_FORECAST_PATH}?lat=${forecast_location.latitude}&lon=${forecast_location.longitude}&apikey=${constants.WEATHER_APIKEY}`;
-
-            
-            // // this.set('is_loading', true);
-            // // this.setIcons();
-
-            // requestor.get(url_Forecast).then((response) => {
-            // this.set('is_loading', false);
-            // var forecast = this.getForecast(response);
-            // this.set('forecast', forecast);
-            // });
+            const promise = new Promise((resolve, reject) => {
+              resolve(location);
+            });
+            promise.then((res) => {
+              var forecast_lat = locationStore.getLatitude();
+              var forecast_lon = locationStore.getLongitude();
+              var url_Forecast = `${constants.WEATHER_URL}${constants.WEATHER_FORECAST_PATH}?lat=${forecast_lat}&lon=${forecast_lon}&apikey=${constants.WEATHER_APIKEY}`;
+              console.log(url_Forecast);
+              this.setIconsTab2();
+                                        
+              requestor.get(url_Forecast).then((response) => {
+                                
+                var forecast = this.getForecast(response);
+                this.set('forecast', forecast);
+                console.log(forecast);
+                
+              });
+            });
+            promise.catch((err) => {
+              // This is never called
+            }); 
           
     }
-    private getForecast(response) {
+    getForecast(response) {
       var forecast = [];
       var list = response.list.splice(1);
       list.forEach((item) => {
@@ -91,21 +103,25 @@ export class HelloWorldModel extends Observable {
           icon: String.fromCharCode(constants.WEATHER_ICONS['day'][item.weather[0].main.toLowerCase()]),
           temperature: {
             day: `${utilities.describeTemperature(item.temp.day)}`,
-            night: `${utilities.describeTemperature(item.temp.night)}`
+            night:`${utilities.describeTemperature(item.temp.night)}`
           },
           wind: `${item.speed}m/s`,
           clouds: `${item.clouds}%`,
           pressure: `${item.pressure} hpa`,
           description: item.weather[0].description
         })
-      });
-
+      });  
       return forecast;
     }
-
+    setIconsTab2() {
+      var icons = utilities.getIcons(['temperature', 'wind', 'cloud', 'pressure']);
+      icons.forEach((item) => {
+        this.set(`${item.name}_icon`, item.icon);
+      });
+    }  
 
     
-    setIcons() {
+    setIconsTab1() {
         var icons = utilities.getIcons([
           'temperature', 'wind', 'cloud',
           'pressure', 'humidity', 'rain',
@@ -114,7 +130,5 @@ export class HelloWorldModel extends Observable {
         icons.forEach((item) => {
           this.set(`${item.name}_icon`, item.icon);
         });
-      }
-
-   
+      }   
 }
